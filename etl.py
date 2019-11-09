@@ -7,7 +7,7 @@ class Extract:
         # database part
         self.con = psycopg2.connect(
             host="localhost",
-            database="test"
+            database="source"
         )
         self.cur = self.con.cursor()
 
@@ -49,10 +49,42 @@ class Load:
         self.con.close()
 
 
+def create():
+    con = psycopg2.connect(host="localhost", database="postgres")
+    con.autocommit = True  # Can't drop database otherwise
+    cur = con.cursor()
+    try:
+        cur.execute("drop database source;")
+    except psycopg2.errors.InvalidCatalogName:
+        print("source database didn't exist, which is fine")
+    cur.execute("create database source;")
+    cur.close()
+    con.close()
+
+    con = psycopg2.connect(host="localhost", database="source")
+    cur = con.cursor()
+    # add sleep data
+    sqlfile = open('./sql/sleep.sql', 'r')
+    cur.execute(sqlfile.read())
+
+    # add mood data
+    sqlfile = open('./sql/mood.sql', 'r')
+    cur.execute(sqlfile.read())
+
+    # add strava data
+    sqlfile = open('./sql/strava.sql', 'r')
+    cur.execute(sqlfile.read())
+
+    con.commit()
+    cur.close()
+    con.close()
+
+
 # cur.execute("insert into person () values ()");
 # some inspo from here: https://medium.com/datadriveninvestor/complete-data-analytics-solution-using-etl-pipeline-in-python-edd6580de24b
 if __name__ == '__main__':
-    extracter = Extract()
-    rows = extracter.extract()
-    extracter.print(rows)
-    extracter.close(False)
+    create()
+    # extracter = Extract()
+    # rows = extracter.extract()
+    # extracter.print(rows)
+    # extracter.close(False)
