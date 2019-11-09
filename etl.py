@@ -127,9 +127,56 @@ def create_source():
     con.close()
 
 
+def create_target():
+    con = psycopg2.connect(host="localhost", database="postgres")
+    con.autocommit = True  # Can't drop database otherwise
+    curs = con.cursor()
+    try:
+        curs.execute("drop database target;")
+    except psycopg2.errors.InvalidCatalogName:
+        print("target database didn't exist, which is fine")
+    curs.execute("create database target;")
+    curs.close()
+    con.close()
+
+    con = psycopg2.connect(host="localhost", database="target")
+    curs = con.cursor()
+    # add sleep data
+    sql = ("create table health ("
+           "id bigserial primary key not null, "
+           "date date unique not null, "
+           "mood int not null, "
+           "netflix boolean not null, "
+           "sport boolean not null, "
+           "reading boolean not null, "
+           "outdoors boolean not null, "
+           "sleep_quality DECIMAL(4,2) not null, "
+           "exercise_minutes DECIMAL(8,2) not null, "
+           "sleep_minutes DECIMAL(8,2) not null "
+           ");")
+    curs.execute(sql)
+
+    con.commit()
+    curs.close()
+    con.close()
+
+
+def clear_target():
+    con = psycopg2.connect(host="localhost", database="target")
+    curs = con.cursor()
+    # add sleep data
+    sql = "truncate health"
+    curs.execute(sql)
+    con.commit()
+    curs.close()
+    con.close()
+
+
 # some inspo from here: https://medium.com/datadriveninvestor/complete-data-analytics-solution-using-etl-pipeline-in-python-edd6580de24b
 if __name__ == '__main__':
     # create_source()
+    # create_target()
+    clear_target()
 
     # extracter = Extract()
     # data = extracter.get_DB_data()
