@@ -1,36 +1,44 @@
 import psycopg2  # psycho-postgrep-2
+import pandas as pd
 
 
 class Extract:
-
     def __init__(self):
         # database part
         self.con = psycopg2.connect(
             host="localhost",
             database="source"
         )
-        self.cur = self.con.cursor()
+        self.curs = self.con.cursor()
 
     def close(self, commit=False):
         # database part
         if (commit):
             self.con.commit()
-        self.cur.close()
+        self.curs.close()
         self.con.close()
 
-    def extract(self):
+    def get_DB_data(self):
         # database part
-        self.cur.execute("select person.email, person.country_of_birth, person.date_of_birth, car.price "
-                         "from person left join car on person.car_id=car.id;")
-        rows = self.cur.fetchall()
-        return rows
+        self.curs.execute("select * "
+                          "from strava "
+                          # "full outer join sleep on strava.date = sleep.date "
+                          "join sleep on strava.date = sleep.date "
+                          "join mood on strava.date = mood.date "
+                          ";")
+        rows = self.curs.fetchall()
+        colnames = [desc[0] for desc in self.curs.description]
+        return rows, colnames
 
     def print(self, rows):
-        for r in rows:
-            print(
-                "email: {}, country: {}, birthdate: {}, carprice: {}"
-                .format(r[0], r[1], r[2], r[3])
-            )
+        for row in rows:
+            for field in row:
+                print(field)
+            print("")
+            # print(
+            #     "email: {}, country: {}, birthdate: {}, carprice: {}"
+            #     .format(r[0], r[1], r[2], r[3])
+            # )
 
 
 class Load:
@@ -40,51 +48,68 @@ class Load:
             host="localhost",
             database="target"
         )
-        self.cur = self.con.cursor()
+        self.curs = self.con.cursor()
+
+    def put_DB_data(self, data, table):
+        print("putting")
+        if isinstance(data, pd.DataFrame):
+            try:
+                print("inserting dataframe")
+            except Exception as e:
+                print("Something went wrong:")
+                print(e)
+        else:
+            try:
+                print("inserting dict")
+            except Exception as e:
+                print("Something went wrong:")
+                print(e)
+
 
     def close(self, commit=False):
         if (commit):
             self.con.commit()
-        self.cur.close()
+        self.curs.close()
         self.con.close()
 
 
 def create():
     con = psycopg2.connect(host="localhost", database="postgres")
     con.autocommit = True  # Can't drop database otherwise
-    cur = con.cursor()
+    curs = con.cursor()
     try:
-        cur.execute("drop database source;")
+        curs.execute("drop database source;")
     except psycopg2.errors.InvalidCatalogName:
         print("source database didn't exist, which is fine")
-    cur.execute("create database source;")
-    cur.close()
+    curs.execute("create database source;")
+    curs.close()
     con.close()
 
     con = psycopg2.connect(host="localhost", database="source")
-    cur = con.cursor()
+    curs = con.cursor()
     # add sleep data
     sqlfile = open('./sql/sleep.sql', 'r')
-    cur.execute(sqlfile.read())
+    curs.execute(sqlfile.read())
 
     # add mood data
     sqlfile = open('./sql/mood.sql', 'r')
-    cur.execute(sqlfile.read())
+    curs.execute(sqlfile.read())
 
     # add strava data
     sqlfile = open('./sql/strava.sql', 'r')
-    cur.execute(sqlfile.read())
+    curs.execute(sqlfile.read())
 
     con.commit()
-    cur.close()
+    curs.close()
     con.close()
 
 
-# cur.execute("insert into person () values ()");
 # some inspo from here: https://medium.com/datadriveninvestor/complete-data-analytics-solution-using-etl-pipeline-in-python-edd6580de24b
 if __name__ == '__main__':
-    create()
+    # create()
     # extracter = Extract()
-    # rows = extracter.extract()
+    # rows, colnames = extracter.get_DB_data()
     # extracter.print(rows)
+    # print(colnames)
     # extracter.close(False)
+    print("done")
