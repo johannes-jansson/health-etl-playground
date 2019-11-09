@@ -3,6 +3,7 @@ import pandas as pd
 import pandas.io.sql as sqlio
 import numpy as np
 from datetime import datetime
+from sqlalchemy import create_engine
 
 
 class Extract:
@@ -35,32 +36,15 @@ class Extract:
 
 class Load:
     def __init__(self):
-        self.con = psycopg2.connect(
-            host="localhost",
-            database="target"
-        )
-        self.curs = self.con.cursor()
+        # create sqlalchemy engine so that we can use pandas to insert
+        self.engine = create_engine('postgresql://johannes@localhost:5432/target')
 
     def put_DB_data(self, data, table):
-        print("putting")
-        if isinstance(data, pd.DataFrame):
-            try:
-                print("inserting dataframe")
-            except Exception as e:
-                print("Something went wrong:")
-                print(e)
-        else:
-            try:
-                print("inserting dict")
-            except Exception as e:
-                print("Something went wrong:")
-                print(e)
-
-    def close(self, commit=False):
-        if (commit):
-            self.con.commit()
-        self.curs.close()
-        self.con.close()
+        try:
+            data.to_sql(table, self.engine, if_exists='replace', index=False)
+        except Exception as e:
+            print("Something went wrong:")
+            print(e)
 
 
 class Transform:
@@ -70,7 +54,6 @@ class Transform:
         self.data = extracter.get_DB_data()
         extracter.close()
         self.transform()
-        self.loader.close()
 
     def transform(self):
         # remove unnecessary id fields, dates are our new id's
