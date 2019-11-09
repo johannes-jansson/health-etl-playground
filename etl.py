@@ -21,14 +21,14 @@ class Extract:
     def get_DB_data(self):
         # database part
         self.curs.execute("select * "
-                          "from strava "
+                          "from mood "
                           # "full outer join sleep on strava.date = sleep.date "
-                          "join sleep on strava.date = sleep.date "
-                          "join mood on strava.date = mood.date "
+                          "left join sleep on mood.date = sleep.date "
+                          "left join strava on mood.date = strava.date "
                           ";")
         rows = self.curs.fetchall()
         colnames = [desc[0] for desc in self.curs.description]
-        return rows, colnames
+        return {"headers": colnames, "data": rows}
 
     def print(self, rows):
         for row in rows:
@@ -42,7 +42,6 @@ class Extract:
 
 
 class Load:
-
     def __init__(self):
         self.con = psycopg2.connect(
             host="localhost",
@@ -65,7 +64,6 @@ class Load:
                 print("Something went wrong:")
                 print(e)
 
-
     def close(self, commit=False):
         if (commit):
             self.con.commit()
@@ -73,7 +71,26 @@ class Load:
         self.con.close()
 
 
-def create():
+class Transform:
+    def __init__(self):
+        self.loader = Load()
+        extracter = Extract()
+        self.data = extracter.get_DB_data()
+        extracter.close()
+        self.transform()
+
+    def transform(self):
+        dict = {}
+        for i, row in enumerate(self.data["data"]):
+            print("Looking at object {}".format(i))
+            for j, item in enumerate(row):
+                print("{}:{}".format(self.data["headers"][j], row[j]))
+            print("")
+        self.loader.close()
+
+
+
+def create_source():
     con = psycopg2.connect(host="localhost", database="postgres")
     con.autocommit = True  # Can't drop database otherwise
     curs = con.cursor()
@@ -106,10 +123,12 @@ def create():
 
 # some inspo from here: https://medium.com/datadriveninvestor/complete-data-analytics-solution-using-etl-pipeline-in-python-edd6580de24b
 if __name__ == '__main__':
-    # create()
-    # extracter = Extract()
-    # rows, colnames = extracter.get_DB_data()
-    # extracter.print(rows)
+    # create_source()
+    extracter = Extract()
+    data = extracter.get_DB_data()
+    extracter.print(data["data"])
     # print(colnames)
-    # extracter.close(False)
-    print("done")
+    extracter.close(False)
+    # Transform()
+    # print("done")
+
