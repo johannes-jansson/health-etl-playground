@@ -1,6 +1,8 @@
 import psycopg2  # psycho-postgrep-2
 import pandas as pd
 import pandas.io.sql as sqlio
+import numpy as np
+from datetime import datetime
 
 
 class Extract:
@@ -68,16 +70,30 @@ class Transform:
         self.data = extracter.get_DB_data()
         extracter.close()
         self.transform()
-
-    def transform(self):
-        dict = {}
-        for i, row in enumerate(self.data["data"]):
-            print("Looking at object {}".format(i))
-            for j, item in enumerate(row):
-                print("{}:{}".format(self.data["headers"][j], row[j]))
-            print("")
         self.loader.close()
 
+    def transform(self):
+        # remove unnecessary id fields, dates are our new id's
+        self.data = self.data.drop(["id"], axis=1)
+        # remove unnexessary date fields, keep one
+        self.data = self.data.loc[:, ~self.data.columns.duplicated()]
+        # change all None's to NaN's
+        self.data.fillna(value=pd.np.nan, inplace=True)
+
+        # we decided not to care about strava except for duration
+        self.data = self.data.drop(["activity_type", "distance_km", "start_time"], axis=1)
+
+        # calculate sleep duration
+        self.data['fell_asleep'] = pd.to_datetime(self.data['fell_asleep'])
+        self.data['woke_up'] = pd.to_datetime(self.data['woke_up'])
+        self.data["sleep_minutes"] = self.data[["fell_asleep", "woke_up"]].apply(lambda x: (x[1] - x[0]).seconds / 60 if x[1] > x[0] else (x[0] - x[1]).seconds / 60, axis=1)
+        self.data = self.data.drop(["fell_asleep", "woke_up"], axis=1)
+
+        # rename exercide duration
+        self.data.rename(columns={"duration_minutes": "exercise_minutes"})
+
+        print(self.data)
+        # self.loader.put_DB_data(self.data, 'default');
 
 
 def create_source():
@@ -114,11 +130,11 @@ def create_source():
 # some inspo from here: https://medium.com/datadriveninvestor/complete-data-analytics-solution-using-etl-pipeline-in-python-edd6580de24b
 if __name__ == '__main__':
     # create_source()
-    extracter = Extract()
-    data = extracter.get_DB_data()
-    extracter.print(data["data"])
-    # print(colnames)
-    extracter.close(False)
-    # Transform()
-    # print("done")
 
+    # extracter = Extract()
+    # data = extracter.get_DB_data()
+    # print(data)
+    # extracter.close(False)
+
+    Transform()
+    print("done")
