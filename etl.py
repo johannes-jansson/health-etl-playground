@@ -1,5 +1,6 @@
 import psycopg2  # psycho-postgrep-2
 import pandas as pd
+import pandas.io.sql as sqlio
 
 
 class Extract:
@@ -19,26 +20,15 @@ class Extract:
         self.con.close()
 
     def get_DB_data(self):
-        # database part
-        self.curs.execute("select * "
-                          "from mood "
-                          # "full outer join sleep on strava.date = sleep.date "
-                          "left join sleep on mood.date = sleep.date "
-                          "left join strava on mood.date = strava.date "
-                          ";")
-        rows = self.curs.fetchall()
-        colnames = [desc[0] for desc in self.curs.description]
-        return {"headers": colnames, "data": rows}
-
-    def print(self, rows):
-        for row in rows:
-            for field in row:
-                print(field)
-            print("")
-            # print(
-            #     "email: {}, country: {}, birthdate: {}, carprice: {}"
-            #     .format(r[0], r[1], r[2], r[3])
-            # )
+        # get all days with mood, and add sleep and strava data if available
+        query = ("select * "
+                 "from mood "
+                 # "full outer join sleep on strava.date = sleep.date "
+                 "left join sleep on mood.date = sleep.date "
+                 "left join strava on mood.date = strava.date "
+                 ";")
+        data = sqlio.read_sql_query(query, self.con)
+        return data
 
 
 class Load:
