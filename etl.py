@@ -62,21 +62,17 @@ class Transform:
         self.data = self.data.loc[:, ~self.data.columns.duplicated()]
         # change all None's to NaN's
         self.data.fillna(value=pd.np.nan, inplace=True)
-
         # we decided not to care about strava except for duration
         self.data = self.data.drop(["activity_type", "distance_km", "start_time"], axis=1)
-
         # calculate sleep duration
         self.data['fell_asleep'] = pd.to_datetime(self.data['fell_asleep'])
         self.data['woke_up'] = pd.to_datetime(self.data['woke_up'])
         self.data["sleep_minutes"] = self.data[["fell_asleep", "woke_up"]].apply(lambda x: (x[1] - x[0]).seconds / 60 if x[1] > x[0] else (x[0] - x[1]).seconds / 60, axis=1)
         self.data = self.data.drop(["fell_asleep", "woke_up"], axis=1)
-
-        # rename exercide duration
-        self.data.rename(columns={"duration_minutes": "exercise_minutes"})
-
-        print(self.data)
-        # self.loader.put_DB_data(self.data, 'default');
+        # rename exercide duration field
+        self.data = self.data.rename(columns={"duration_minutes": "exercise_minutes"})
+        # load it!
+        self.loader.put_DB_data(self.data, 'health')
 
 
 def create_source():
