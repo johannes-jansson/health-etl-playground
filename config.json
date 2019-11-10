@@ -1,0 +1,22 @@
+{
+  "source": {
+    "type": "postgresql",
+    "host": "localhost",
+    "database": "source",
+    "query": [
+      "select * ",
+      "from mood ",
+      "left join sleep on mood.date = sleep.date ",
+      "left join strava on mood.date = strava.date ",
+      ";"
+    ]
+  },
+  "target": {
+    "type": "postgresql",
+    "host": "localhost",
+    "port": "5432",
+    "database": "target",
+    "username": "johannes",
+    "table": "health"
+  }
+}

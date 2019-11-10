@@ -1,18 +1,20 @@
-import psycopg2  # psycho-postgrep-2
+from datetime import datetime
+import json
+import numpy as np
 import pandas as pd
 import pandas.io.sql as sqlio
-import numpy as np
-from datetime import datetime
+import psycopg2  # psycho-postgrep-2
 from sqlalchemy import create_engine
+import sys
 
 
 class Extract:
-    def __init__(self):
+    def __init__(self, config):
+        self.config = config
         # database part
         self.con = psycopg2.connect(
-            host="localhost",
-            database="source"
-        )
+            host=config["host"],
+            database=config["database"])
         self.curs = self.con.cursor()
 
     def close(self, commit=False):
@@ -23,34 +25,39 @@ class Extract:
         self.con.close()
 
     def get_DB_data(self):
-        # get all days with mood, and add sleep and strava data if available
-        query = ("select * "
-                 "from mood "
-                 # "full outer join sleep on strava.date = sleep.date "
-                 "left join sleep on mood.date = sleep.date "
-                 "left join strava on mood.date = strava.date "
-                 ";")
+        query = "".join(self.config["query"])
         data = sqlio.read_sql_query(query, self.con)
         return data
 
 
 class Load:
-    def __init__(self):
+    def __init__(self, config):
         # create sqlalchemy engine so that we can use pandas to insert
-        self.engine = create_engine('postgresql://johannes@localhost:5432/target')
+        self.config = config
+        self.engine = create_engine("{}://{}@{}:{}/{}".format(
+            self.config["type"],
+            self.config["username"],
+            self.config["host"],
+            self.config["port"],
+            self.config["database"]))
 
-    def put_DB_data(self, data, table):
+    def put_DB_data(self, data):
         try:
-            data.to_sql(table, self.engine, if_exists='replace', index=False)
+            data.to_sql(
+                self.config["table"],
+                self.engine,
+                if_exists='replace',
+                index=False)
         except Exception as e:
             print("Something went wrong:")
             print(e)
 
 
 class Transform:
-    def __init__(self):
-        self.loader = Load()
-        extracter = Extract()
+    def __init__(self, configfile="config.json"):
+        config = json.load(open(configfile, "r"))
+        self.loader = Load(config["target"])
+        extracter = Extract(config["source"])
         self.data = extracter.get_DB_data()
         extracter.close()
         self.transform()
@@ -72,7 +79,7 @@ class Transform:
         # rename exercide duration field
         self.data = self.data.rename(columns={"duration_minutes": "exercise_minutes"})
         # load it!
-        self.loader.put_DB_data(self.data, 'health')
+        self.loader.put_DB_data(self.data)
 
 
 def create_source():
@@ -161,5 +168,8 @@ if __name__ == '__main__':
     # print(data)
     # extracter.close(False)
 
-    Transform()
+    if (len(sys.argv) > 1):
+        Transform(sys.argv[1])
+    else:
+        Transform()
     print("done")
