@@ -1,0 +1,88 @@
+create table strava (
+	id bigserial primary key not null,
+	date date unique not null,
+	activity_type VARCHAR(4) not null,
+	distance_km DECIMAL(4,2) not null,
+	start_time VARCHAR(50) not null,
+	duration_minutes DECIMAL(5,2) not null
+);
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (1, '9/10/2019', 'bike', 10.59, '9:17:17', 126.37) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (2, '4/9/2019', 'swim', 17.43, '12:23:13', 68.68) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (3, '7/7/2019', 'swim', 23.25, '19:49:41', 44.73) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (4, '8/4/2019', 'bike', 19.79, '12:35:03', 115.62) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (5, '11/4/2019', 'bike', 11.96, '22:52:59', 80.2) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (6, '6/29/2019', 'run', 29.89, '22:02:31', 124.5) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (7, '7/7/2019', 'run', 17.13, '11:05:52', 16.69) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (8, '1/3/2019', 'run', 1.29, '6:47:19', 97.43) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (9, '6/1/2019', 'run', 15.3, '19:48:30', 124.85) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (10, '1/21/2019', 'run', 12.02, '16:47:24', 14.55) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (11, '9/5/2019', 'bike', 8.56, '7:53:06', 6.75) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (12, '5/25/2019', 'swim', 15.06, '20:03:13', 24.16) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (13, '11/17/2018', 'swim', 4.73, '16:53:28', 40.99) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (14, '6/23/2019', 'run', 13.0, '6:37:32', 58.77) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (15, '8/3/2019', 'run', 26.98, '20:43:18', 7.75) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (16, '2/14/2019', 'run', 3.92, '17:00:18', 122.48) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (17, '8/2/2019', 'bike', 28.48, '12:16:12', 28.04) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (18, '2/24/2019', 'swim', 29.66, '9:27:00', 7.6) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (19, '5/22/2019', 'swim', 1.35, '17:14:21', 23.83) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (20, '8/7/2019', 'swim', 21.73, '21:06:36', 7.49) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (21, '11/4/2019', 'bike', 4.38, '22:12:30', 120.9) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (22, '7/9/2019', 'swim', 9.73, '11:04:13', 62.35) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (23, '4/14/2019', 'swim', 11.5, '22:38:57', 114.09) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (24, '5/25/2019', 'run', 10.83, '15:46:57', 19.89) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (25, '4/14/2019', 'bike', 20.19, '9:34:18', 26.71) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (26, '4/30/2019', 'swim', 10.46, '8:31:59', 1.82) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (27, '9/21/2019', 'swim', 28.77, '6:03:58', 102.28) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (28, '12/15/2018', 'run', 1.46, '21:38:06', 140.25) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (29, '4/5/2019', 'swim', 7.95, '21:09:07', 104.49) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (30, '4/9/2019', 'swim', 13.84, '6:02:04', 117.39) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (31, '12/24/2018', 'run', 1.01, '9:32:08', 128.43) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (32, '12/4/2018', 'bike', 4.1, '15:57:17', 108.28) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (33, '2/21/2019', 'swim', 28.99, '19:09:39', 94.34) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (34, '1/6/2019', 'bike', 9.37, '12:59:03', 78.96) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (35, '6/4/2019', 'run', 28.73, '6:32:56', 61.83) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (36, '5/4/2019', 'swim', 11.34, '11:29:36', 67.83) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (37, '9/22/2019', 'swim', 27.45, '20:34:15', 8.58) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (38, '4/17/2019', 'swim', 27.04, '17:01:53', 132.78) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (39, '11/30/2018', 'bike', 29.37, '6:50:09', 112.0) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (40, '4/7/2019', 'bike', 7.1, '6:18:50', 68.84) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (41, '2/27/2019', 'swim', 27.76, '7:59:27', 103.4) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (42, '6/2/2019', 'swim', 24.02, '18:13:11', 120.39) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (43, '11/27/2018', 'swim', 24.25, '11:27:31', 111.15) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (44, '5/9/2019', 'bike', 22.87, '7:16:39', 146.7) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (45, '6/6/2019', 'run', 19.14, '17:47:59', 147.06) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (46, '5/9/2019', 'bike', 29.31, '14:30:12', 32.31) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (47, '2/5/2019', 'bike', 2.08, '14:15:32', 30.9) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (48, '3/28/2019', 'run', 23.83, '14:25:22', 24.93) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (49, '9/25/2019', 'run', 7.4, '10:51:31', 104.6) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (50, '3/18/2019', 'swim', 26.77, '15:05:12', 118.41) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (51, '1/13/2019', 'swim', 10.52, '20:52:39', 145.7) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (52, '2/15/2019', 'bike', 21.73, '17:48:48', 57.96) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (53, '4/10/2019', 'bike', 24.2, '14:17:53', 46.83) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (54, '6/2/2019', 'run', 11.62, '15:06:40', 106.7) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (55, '10/6/2019', 'swim', 25.87, '13:46:03', 3.14) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (56, '6/14/2019', 'bike', 1.73, '14:41:29', 82.35) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (57, '10/1/2019', 'bike', 26.56, '8:05:18', 51.23) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (58, '8/3/2019', 'swim', 22.55, '13:35:07', 135.14) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (59, '7/18/2019', 'bike', 9.13, '9:32:35', 19.94) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (60, '6/18/2019', 'bike', 12.03, '19:50:18', 24.4) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (61, '10/5/2019', 'bike', 7.59, '13:52:49', 34.62) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (62, '7/29/2019', 'run', 21.94, '8:43:22', 48.21) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (63, '8/8/2019', 'run', 14.03, '11:19:40', 58.1) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (64, '3/1/2019', 'swim', 11.1, '10:09:03', 33.54) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (65, '2/21/2019', 'swim', 7.23, '14:26:37', 140.78) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (66, '9/8/2019', 'bike', 16.36, '20:03:52', 80.75) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (67, '10/19/2019', 'swim', 27.0, '13:37:42', 2.35) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (68, '12/20/2018', 'swim', 24.94, '21:52:54', 15.72) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (69, '8/8/2019', 'run', 3.55, '18:05:07', 106.13) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (70, '9/10/2019', 'swim', 19.08, '6:50:33', 1.99) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (71, '2/19/2019', 'swim', 20.69, '7:39:17', 56.91) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (72, '6/21/2019', 'bike', 15.46, '22:03:50', 50.48) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (73, '5/19/2019', 'run', 9.05, '19:25:08', 89.62) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (74, '4/24/2019', 'run', 20.29, '22:38:56', 20.19) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (75, '3/27/2019', 'run', 20.63, '22:19:58', 79.11) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (76, '8/14/2019', 'swim', 29.53, '21:29:11', 36.99) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (77, '8/11/2019', 'bike', 2.35, '8:42:55', 42.67) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (78, '11/4/2019', 'bike', 28.57, '12:57:57', 79.58) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (79, '11/26/2018', 'run', 19.15, '7:40:03', 13.17) on conflict (date) do nothing;
+insert into strava (id, date, activity_type, distance_km, start_time, duration_minutes) values (80, '1/8/2019', 'run', 6.72, '22:05:26', 3.28) on conflict (date) do nothing;
