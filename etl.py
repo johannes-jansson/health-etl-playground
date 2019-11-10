@@ -151,7 +151,6 @@ def clear_target():
     con.close()
 
 
-# some inspo from here: https://medium.com/datadriveninvestor/complete-data-analytics-solution-using-etl-pipeline-in-python-edd6580de24b
 if __name__ == '__main__':
     # create_source()
     # create_target()
