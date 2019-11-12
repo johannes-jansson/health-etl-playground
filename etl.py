@@ -10,23 +10,29 @@ import sys
 
 class Extract:
     def __init__(self, config):
-        self.config = config
-        # database part
-        self.con = psycopg2.connect(
-            host=config["host"],
-            database=config["database"])
-        self.curs = self.con.cursor()
+        self.dbs = []
+        self.csvs = []
+        for source in config:
+            if source["type"] == "postgresql":
+                self.dbs.append(source)
+            if source["type"] == "csv":
+                self.csvs.append(source)
 
-    def close(self, commit=False):
-        # database part
-        if (commit):
-            self.con.commit()
-        self.curs.close()
-        self.con.close()
+    def get_db_data(self):
+        data = []
+        for source in self.dbs:
+            con = psycopg2.connect(
+                host=source["host"],
+                database=source["database"])
+            query = "".join(source["query"])
+            data.append(sqlio.read_sql_query(query, con))
+            con.close()
+        return data
 
-    def get_DB_data(self):
-        query = "".join(self.config["query"])
-        data = sqlio.read_sql_query(query, self.con)
+    def get_csv_data(self):
+        data = []
+        for source in self.csvs:
+            data.append(pd.read_csv(source["file"]))
         return data
 
 
@@ -57,29 +63,60 @@ class Transform:
     def __init__(self, configfile="config.json"):
         config = json.load(open(configfile, "r"))
         self.loader = Load(config["target"])
-        extracter = Extract(config["source"])
-        self.data = extracter.get_DB_data()
-        extracter.close()
+        extracter = Extract(config["sources"])
+        self.db_data = extracter.get_db_data()
+        self.csv_data = extracter.get_csv_data()
         self.transform()
 
     def transform(self):
+        # give the two sources simpler names. 
+        d = self.db_data[0]
+        c = self.csv_data[0]
+
+        # sleep contains duplicate dates for test data since it's mocked, just
+        # remove them for now
+        # TODO: make sure mocked data has unique dates
+        c = c.drop_duplicates(subset=['date'])
+
+        # db data has duplicate fields from the sql join, remove these
+        d = d.loc[:, ~d.columns.duplicated()]
+
+        # old id's from sleep are unneccessary and causes problems, delete them
+        c = c.drop(["id"], axis=1)
+
+        # make sure the date field is a pandas date
+        # c.loc[":", "date"] = pd.to_datetime(c['date'])
+        c['date'] = pd.to_datetime(c['date'])
+        d['date'] = pd.to_datetime(d['date'])
+        
+        print(c)
+        print(d)
+
+        # join the two data sources
+        d = pd.merge(d, c, on='date', how='left')
+
         # remove unnecessary id fields, dates are our new id's
-        self.data = self.data.drop(["id"], axis=1)
+        d = d.drop(["id"], axis=1)
+
         # remove unnexessary date fields, keep one
-        self.data = self.data.loc[:, ~self.data.columns.duplicated()]
+        d = d.loc[:, ~d.columns.duplicated()]
+
         # change all None's to NaN's
-        self.data.fillna(value=pd.np.nan, inplace=True)
-        # we decided not to care about strava except for duration
-        self.data = self.data.drop(["activity_type", "distance_km", "start_time"], axis=1)
-        # calculate sleep duration
-        self.data['fell_asleep'] = pd.to_datetime(self.data['fell_asleep'])
-        self.data['woke_up'] = pd.to_datetime(self.data['woke_up'])
-        self.data["sleep_minutes"] = self.data[["fell_asleep", "woke_up"]].apply(lambda x: (x[1] - x[0]).seconds / 60 if x[1] > x[0] else (x[0] - x[1]).seconds / 60, axis=1)
-        self.data = self.data.drop(["fell_asleep", "woke_up"], axis=1)
-        # rename exercide duration field
-        self.data = self.data.rename(columns={"duration_minutes": "exercise_minutes"})
+        d.fillna(value=pd.np.nan, inplace=True)
+
+        # the only strava data we're interested in is duration
+        d = d.drop(["activity_type", "distance_km", "start_time"], axis=1)
+        d = d.rename(columns={"duration_minutes": "exercise_minutes"})
+
+        # calculate sleep duration, drop original cols
+        d['fell_asleep'] = pd.to_datetime(d['fell_asleep'], format="'%H:%M:%S'")
+        d['woke_up'] = pd.to_datetime(d['woke_up'], format="'%H:%M:%S'")
+        d["sleep_minutes"] = d[["fell_asleep", "woke_up"]].apply(lambda x: (x[1] - x[0]).seconds / 60 if x[1] > x[0] else (x[0] - x[1]).seconds / 60, axis=1)
+        d = d.drop(["fell_asleep", "woke_up"], axis=1)
+
         # load it!
-        self.loader.put_DB_data(self.data)
+        print(d)
+        self.loader.put_DB_data(d)
 
 
 def create_source():
@@ -97,15 +134,15 @@ def create_source():
     con = psycopg2.connect(host="localhost", database="source")
     curs = con.cursor()
     # add sleep data
-    sqlfile = open('./sql/sleep.sql', 'r')
+    sqlfile = open('./data/sleep.sql', 'r')
     curs.execute(sqlfile.read())
 
     # add mood data
-    sqlfile = open('./sql/mood.sql', 'r')
+    sqlfile = open('./data/mood.sql', 'r')
     curs.execute(sqlfile.read())
 
     # add strava data
-    sqlfile = open('./sql/strava.sql', 'r')
+    sqlfile = open('./data/strava.sql', 'r')
     curs.execute(sqlfile.read())
 
     con.commit()
@@ -127,7 +164,6 @@ def create_target():
 
     con = psycopg2.connect(host="localhost", database="target")
     curs = con.cursor()
-    # add sleep data
     sql = ("create table health ("
            "id bigserial primary key not null, "
            "date date unique not null, "
@@ -164,7 +200,7 @@ if __name__ == '__main__':
     clear_target()
 
     # extracter = Extract()
-    # data = extracter.get_DB_data()
+    # data = extracter.get_db_data()
     # print(data)
     # extracter.close(False)
 

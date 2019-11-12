@@ -1,16 +1,21 @@
 {
-  "source": {
-    "type": "postgresql",
-    "host": "localhost",
-    "database": "source",
-    "query": [
-      "select * ",
-      "from mood ",
-      "left join sleep on mood.date = sleep.date ",
-      "left join strava on mood.date = strava.date ",
-      ";"
-    ]
-  },
+  "sources": [
+    {
+      "type": "postgresql",
+      "host": "localhost",
+      "database": "source",
+      "query": [
+        "select * ",
+        "from mood ",
+        "left join strava on mood.date = strava.date ",
+        ";"
+      ]
+    },
+    {
+      "type": "csv",
+      "file": "./data/sleep.csv"
+    }
+  ],
   "target": {
     "type": "postgresql",
     "host": "localhost",
