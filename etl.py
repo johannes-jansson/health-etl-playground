@@ -50,7 +50,7 @@ class Load:
             data.to_sql(
                 self.config["table"],
                 self.engine,
-                if_exists='replace',
+                if_exists="replace",
                 index=False)
         except Exception as e:
             print("Something went wrong:")
@@ -74,7 +74,7 @@ class Transform:
         # sleep contains duplicate dates for test data since it's mocked, just
         # remove them for now
         # TODO: make sure mocked data has unique dates
-        c = c.drop_duplicates(subset=['date'])
+        c = c.drop_duplicates(subset=["date"])
 
         # db data has duplicate fields from the sql join, remove these
         d = d.loc[:, ~d.columns.duplicated()]
@@ -83,7 +83,7 @@ class Transform:
         c = c.drop(["id"], axis=1)
 
         # join the two data sources
-        d = pd.merge(d, c, on='date', how='left')
+        d = pd.merge(d, c, on="date", how="left")
 
         # remove unnecessary id fields, dates are our new id's
         d = d.drop(["id"], axis=1)
@@ -99,8 +99,8 @@ class Transform:
         d = d.rename(columns={"duration_minutes": "exercise_minutes"})
 
         # calculate sleep duration, drop original cols
-        d['fell_asleep'] = pd.to_datetime(d['fell_asleep'], format="'%H:%M:%S'")
-        d['woke_up'] = pd.to_datetime(d['woke_up'], format="'%H:%M:%S'")
+        d["fell_asleep"] = pd.to_datetime(d["fell_asleep"], format="'%H:%M:%S'")
+        d["woke_up"] = pd.to_datetime(d["woke_up"], format="'%H:%M:%S'")
         d["sleep_minutes"] = d[["fell_asleep", "woke_up"]].apply(lambda x: (x[1] - x[0]).seconds / 60 if x[1] > x[0] else (x[0] - x[1]).seconds / 60, axis=1)
         d = d.drop(["fell_asleep", "woke_up"], axis=1)
 
@@ -123,15 +123,15 @@ def create_source():
     con = psycopg2.connect(host="localhost", database="source")
     curs = con.cursor()
     # add sleep data
-    sqlfile = open('./data/sleep.sql', 'r')
+    sqlfile = open("./data/sleep.sql", "r")
     curs.execute(sqlfile.read())
 
     # add mood data
-    sqlfile = open('./data/mood.sql', 'r')
+    sqlfile = open("./data/mood.sql", "r")
     curs.execute(sqlfile.read())
 
     # add strava data
-    sqlfile = open('./data/strava.sql', 'r')
+    sqlfile = open("./data/strava.sql", "r")
     curs.execute(sqlfile.read())
 
     con.commit()
@@ -183,7 +183,7 @@ def clear_target():
     con.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     clear_target()
     if (len(sys.argv) > 1):
         Transform(sys.argv[1])
