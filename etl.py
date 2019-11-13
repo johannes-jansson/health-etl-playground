@@ -1,6 +1,4 @@
-from datetime import datetime
 import json
-import numpy as np
 import pandas as pd
 import pandas.io.sql as sqlio
 import psycopg2  # psycho-postgrep-2
@@ -69,7 +67,7 @@ class Transform:
         self.transform()
 
     def transform(self):
-        # give the two sources simpler names. 
+        # give the two sources simpler names.
         d = self.db_data[0]
         c = self.csv_data[0]
 
@@ -83,14 +81,6 @@ class Transform:
 
         # old id's from sleep are unneccessary and causes problems, delete them
         c = c.drop(["id"], axis=1)
-
-        # make sure the date field is a pandas date
-        # c.loc[":", "date"] = pd.to_datetime(c['date'])
-        c['date'] = pd.to_datetime(c['date'])
-        d['date'] = pd.to_datetime(d['date'])
-        
-        print(c)
-        print(d)
 
         # join the two data sources
         d = pd.merge(d, c, on='date', how='left')
@@ -115,7 +105,6 @@ class Transform:
         d = d.drop(["fell_asleep", "woke_up"], axis=1)
 
         # load it!
-        print(d)
         self.loader.put_DB_data(d)
 
 
@@ -195,15 +184,7 @@ def clear_target():
 
 
 if __name__ == '__main__':
-    # create_source()
-    # create_target()
     clear_target()
-
-    # extracter = Extract()
-    # data = extracter.get_db_data()
-    # print(data)
-    # extracter.close(False)
-
     if (len(sys.argv) > 1):
         Transform(sys.argv[1])
     else:
